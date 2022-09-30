@@ -7,6 +7,8 @@ const _ = require("lodash");
 const { rest } = require("lodash");
 const mongoose = require("mongoose");
 
+//connect app to MongoDB cluster
+//read MongoDB docs for further clarification
 const uri = 
   "mongodb+srv://tyrelle:Password22@cluster0.csas9qx.mongodb.net/?retryWrites=true&w=majority"
 
@@ -34,8 +36,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 //static files held in public folder
 app.use(express.static("public"));
 
-// mongoose.connect("mongod://localhost:27017/blogDB", {useNewUrlParser:true});
-
+//schema of how data is added to the database
 const postSchema = {
 title: String,
 content: String,
@@ -86,11 +87,15 @@ app.post("/compose", function(req, res) {
 
 //tapping into dynamic URL
 app.get("/posts/:postId", function(req, res) {
-
+  //express routing to get objectID as shown in database
+  //assign that value to variable
+  
   const requestedPostId = req.params.postId;
-
+  //use Mongoose .findOne() method to locate specific post in database
   Post.findOne({_id: requestedPostId}, function(err, post) {
+    //render post.ejs page
     res.render("post", {
+      //key: value pair - Keys must match .ejs file
         title: post.title,
         content: post.content
       });
@@ -102,8 +107,6 @@ app.get("/posts/:postId", function(req, res) {
 
 //call async function
 connect();
-
-
 
 app.listen(3000, function() {
   console.log("Server started on port 3000");
