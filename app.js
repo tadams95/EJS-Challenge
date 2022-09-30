@@ -5,6 +5,19 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const _ = require("lodash");
 const { rest } = require("lodash");
+const mongoose = require("mongoose");
+
+const uri = 
+  "mongodb+srv://tyrelle:Password22@cluster0.csas9qx.mongodb.net/?retryWrites=true&w=majority"
+
+async function connect() {
+  try {
+    await mongoose.connect(uri);
+    console.log("Connected to MongoDB");
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 //starting content
 const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui id ornare. Semper auctor neque vitae tempus quam. Sit amet cursus sit amet dictum sit amet justo. Viverra tellus in hac habitasse. Imperdiet proin fermentum leo vel orci porta. Donec ultrices tincidunt arcu non sodales neque sodales ut. Mattis molestie a iaculis at erat pellentesque adipiscing. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices vitae auctor eu augue ut lectus arcu bibendum at. Odio euismod lacinia at quis risus sed vulputate odio ut. Cursus mattis molestie a iaculis at erat pellentesque adipiscing.";
@@ -14,10 +27,6 @@ const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rho
 //creates app
 const app = express();
 
-//global posts variable
-let posts = [];
-
-
 //set view engine
 app.set("view engine", "ejs");
 
@@ -25,13 +34,25 @@ app.use(bodyParser.urlencoded({extended: true}));
 //static files held in public folder
 app.use(express.static("public"));
 
+// mongoose.connect("mongod://localhost:27017/blogDB", {useNewUrlParser:true});
+
+const postSchema = {
+title: String,
+content: String,
+};
+
+//mongoose mode that defines post collection
+const Post = mongoose.model("Post", postSchema);
 
 app.get("/", function( req, res ) {
   //displays home.ejs content on home directory
   //puts homeStartingContent into paragraph tag on home.ejs
-  res.render("home", {
+  Post.find({}, function(err, posts){
+    res.render("home", {
     startingContent: homeStartingContent,
     posts: posts
+  });
+  
   });
   
 });
@@ -51,45 +72,36 @@ app.get("/compose", function(req,res) {
 //posting user input from compose page
 app.post("/compose", function(req, res) {
 
-  let post = {
-    postTitle: req.body.postTitle,
-    journalPost: req.body.newJournalPost
-  };
+  const post = new Post ({
+    title: req.body.postTitle,
+    content: req.body.postBody
+  });
 
-  posts.push(post);
-
-  res.redirect("/");
+  post.save(function(err){
+    if (!err){
+      res.redirect("/");
+    };
+  });
 });
 
 //tapping into dynamic URL
-app.get("/posts/:postName", function(req, res) {
-  let requestedTitle = _.lowerCase(req.params.postName);
+app.get("/posts/:postId", function(req, res) {
 
-  posts.forEach(function(post){
-    let storedTitle = _.lowerCase(post.postTitle);
+  const requestedPostId = req.params.postId;
 
-    if (storedTitle === requestedTitle) {
-
-      res.render("post", {
-        contentTitle: post.postTitle,
-        contentPost: post.journalPost
+  Post.findOne({_id: requestedPostId}, function(err, post) {
+    res.render("post", {
+        title: post.title,
+        content: post.content
       });
+   });
       
-    };
-
-    res.redirect("/post");
-  });
-
-});
+    });
 
 
 
-
-
-
-
-
-
+//call async function
+connect();
 
 
 

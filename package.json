@@ -1,18 +1,28 @@
 {
   "name": "ejs-challenge",
   "version": "1.0.0",
-  "description": "",
+  "description": "These are the working files for the EJS challenge in the 2022 Full Stack Web Development Bootcamp on Udemy.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Tyrelle Adams",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
     "bootstrap": "^5.2.1",
     "ejs": "^2.6.1",
     "express": "^4.16.3",
-    "lodash": "^4.17.21"
-  }
+    "lodash": "^4.17.21",
+    "mongoose": "^6.6.2"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tadams95/EJS-Challenge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tadams95/EJS-Challenge/issues"
+  },
+  "homepage": "https://github.com/tadams95/EJS-Challenge#readme"
 }
